@@ -1,0 +1,12 @@
+
+[database]
+  driver = "mysql"
+  host = "localhost"
+  life_time_conn = 40
+  max_idle_conn = 30
+  max_open_conn = 20
+  name = "app_cerud"
+  password = "root"
+  port = 3306
+  sslmode = "disabled"
+  username = "fanchann"
