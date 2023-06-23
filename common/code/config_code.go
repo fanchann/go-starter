@@ -26,7 +26,7 @@ type AppConfig struct {
 	Database DatabaseConfig `toml:"database" yaml:"database" json:"database"`
 }
 
-func WriteAppConfiguration(extension string) []byte {
+func WriteAppConfiguration(extension string) string {
 	config := AppConfig{
 		Database: DatabaseConfig{
 			Driver:       "mysql",
@@ -46,18 +46,18 @@ func WriteAppConfiguration(extension string) []byte {
 	case "toml":
 		tomlCfg, err := toml.Marshal(config)
 		helpers.ErrorWithLog(err)
-		return tomlCfg
+		return string(tomlCfg)
 	case "json":
 		jsonCfg, err := json.MarshalIndent(config, "", "  ")
 		helpers.ErrorWithLog(err)
-		return jsonCfg
+		return string(jsonCfg)
 	case "yaml":
 		yamlCfg, err := yaml.Marshal(config)
 		helpers.ErrorWithLog(err)
-		return yamlCfg
+		return string(yamlCfg)
 	default:
 		tomlCfg, err := toml.Marshal(config)
 		helpers.ErrorWithLog(err)
-		return tomlCfg
+		return string(tomlCfg)
 	}
 }

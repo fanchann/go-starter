@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"%s/common/database"
 
-	"{{.Package}}/common/database"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 )

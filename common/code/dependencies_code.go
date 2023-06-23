@@ -505,9 +505,9 @@ rsc.io/quote/v3 v3.1.0/go.mod h1:yEA65RcK8LyAZtP9Kv3t0HmxON59tX3rD+tICJqUlj0=
 rsc.io/sampler v1.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9JXDnKaTXpA=
 `
 
-var GoMod = `module {{.Package}}
+var GoMod = `module %s
 
-go {{.GoVersion}}
+go %s
 
 require (
 	github.com/spf13/viper v1.16.0

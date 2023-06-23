@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"%s/common/types"
 
-	"{{.Packages}}/common/types"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -51,8 +51,8 @@ func (d *DBConfig) DatabaseConnection() (*gorm.DB, error) {
 var DBHelperCode = `package helpers
 
 import (
-	"{{.Package}}/common/config"
-	"{{.Package}}/common/database"
+	"%s/common/config"
+	"%s/common/database"
 )
 
 func InitDatabase() *database.DB {

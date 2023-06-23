@@ -21,20 +21,20 @@ func init() {
 func TestCreateJson(t *testing.T) {
 	s := code.WriteAppConfiguration("json")
 
-	err := os.WriteFile(dirTest+"/settings.json", s, perm)
+	err := os.WriteFile(dirTest+"/settings.json", []byte(s), perm)
 	helpers.ErrorWithLog(err)
 }
 
 func TestCreateToml(t *testing.T) {
 	s := code.WriteAppConfiguration("toml")
 
-	err := os.WriteFile(dirTest+"/settings.toml", s, perm)
+	err := os.WriteFile(dirTest+"/settings.toml", []byte(s), perm)
 	helpers.ErrorWithLog(err)
 }
 
 func TestCreateYaml(t *testing.T) {
 	s := code.WriteAppConfiguration("yaml")
 
-	err := os.WriteFile(dirTest+"/settings.yaml", s, perm)
+	err := os.WriteFile(dirTest+"/settings.yaml", []byte(s), perm)
 	helpers.ErrorWithLog(err)
 }

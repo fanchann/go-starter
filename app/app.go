@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/fanchann/go-starter/common/code"
 	"github.com/fanchann/go-starter/common/functions"
@@ -35,9 +36,11 @@ func GoStarter(app *string) error {
 		}
 	}
 
+	time.Sleep(2 * time.Second)
+
 	filloC := []types.AppStructure{
-		{Path: "cmd/main.go", Code: code.MainCode},
-		{Path: "config/load.go", PackageName: *app, Code: code.LoadConfigCode},
+		{Path: "cmd/main.go", Code: fmt.Sprintf(code.MainCode, *app)},
+		{Path: "config/load.go", PackageName: *app, Code: fmt.Sprintf(code.LoadConfigCode, *app)},
 		{Path: "database/database.go", PackageName: *app, Code: code.DBConfigGo},
 		{Path: "types/dsn.go", PackageName: *app, Code: code.DSN},
 		{Path: "go.mod", PackageName: *app, GoVer: helpers.GetGoVersion(), Code: code.GoMod},

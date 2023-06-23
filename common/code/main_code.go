@@ -6,9 +6,8 @@ import (
 	"flag"
 	"log"
 	"os"
-
-	"{{.Package}}/common/config"
-	"{{.Package}}/common/helpers"
+	"%s/common/config"
+	"%s/common/helpers"
 )
 
 var fileConfiguration *string
