@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/fanchann/go-starter/app"
+	"github.com/fanchann/go-starter/common/types"
 	"github.com/fanchann/go-starter/helpers"
 )
 
@@ -17,6 +19,7 @@ func init() {
 }
 
 func main() {
+	fmt.Printf("%s \n", types.Logo)
 	err := app.GoStarter(pkg, cfg)
 	helpers.ErrorWithLog(err)
 }

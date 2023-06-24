@@ -29,13 +29,13 @@ func GoStarter(app, config *string) error {
 	for _, folder := range folders {
 		err := home.CreateAppPath(folder)
 		if err != nil {
-			return fmt.Errorf("failed to create folder '%s': %v", folder, err)
+			return fmt.Errorf("failed to create layer '%s': [%v]", folder, err)
 		} else {
-			fmt.Printf("Folder '%s' created successfully.\n", folder)
+			fmt.Printf("layer '%s' created successfully.\n", folder)
 		}
 	}
 
-	AppStructure := []types.AppStructure{
+	appStructure := []types.AppStructure{
 		{Path: "cmd/", FileName: "main.go", Code: code.MainCode},
 		{Path: "common/config/", FileName: "load.go", Code: code.LoadConfigCode},
 		{Path: "common/database/", FileName: "database.go", Code: code.DBConfigGo},
@@ -46,7 +46,7 @@ func GoStarter(app, config *string) error {
 		{Path: "/", FileName: fmt.Sprintf("config.%s", *config), Code: code.WriteAppConfiguration(*config)},
 	}
 
-	for _, structure := range AppStructure {
+	for _, structure := range appStructure {
 		if err := home.GenerateAppCode(structure.Code, structure.Path, structure.FileName, helpers.GetGoVersion(), *app, *config); err != nil {
 			return err
 		}

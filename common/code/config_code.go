@@ -29,12 +29,12 @@ type AppConfig struct {
 func WriteAppConfiguration(extension string) string {
 	config := AppConfig{
 		Database: DatabaseConfig{
-			Driver:       "mysql",
+			Driver:       "driver",
 			Host:         "localhost",
-			Port:         3306,
-			Username:     "fanchann",
-			Password:     "root",
-			Name:         "app_cerud",
+			Port:         6969,
+			Username:     "username",
+			Password:     "password",
+			Name:         "db_name",
 			SSLMode:      "disabled",
 			MaxIdleConn:  30,
 			MaxOpenConn:  20,
