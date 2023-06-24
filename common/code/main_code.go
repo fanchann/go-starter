@@ -6,8 +6,9 @@ import (
 	"flag"
 	"log"
 	"os"
-	"%s/common/config"
-	"%s/common/helpers"
+
+	"{{.Package}}/common/config"
+	"{{.Package}}/common/helpers"
 )
 
 var fileConfiguration *string
@@ -17,7 +18,7 @@ you can change the configuration file
 */
 
 func init() {
-	fileConfiguration = flag.String("c", "config.toml", "Insert your configuration setting")
+	fileConfiguration = flag.String("c", "config.{{.Extension}}", "Insert your configuration setting")
 	flag.Parse()
 }
 

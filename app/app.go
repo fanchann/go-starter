@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/fanchann/go-starter/common/code"
 	"github.com/fanchann/go-starter/common/functions"
@@ -11,7 +10,7 @@ import (
 	"github.com/fanchann/go-starter/helpers"
 )
 
-func GoStarter(app *string) error {
+func GoStarter(app, config *string) error {
 	folderName := strings.ReplaceAll(*app, "/", "-")
 	home := functions.AppPath{BasePath: folderName}
 
@@ -30,26 +29,29 @@ func GoStarter(app *string) error {
 	for _, folder := range folders {
 		err := home.CreateAppPath(folder)
 		if err != nil {
-			fmt.Printf("Failed to create folder '%s': %v\n", folder, err)
+			return fmt.Errorf("failed to create folder '%s': %v", folder, err)
 		} else {
 			fmt.Printf("Folder '%s' created successfully.\n", folder)
 		}
 	}
 
-	time.Sleep(2 * time.Second)
-
-	filloC := []types.AppStructure{
-		{Path: "cmd/main.go", Code: fmt.Sprintf(code.MainCode, *app)},
-		{Path: "config/load.go", PackageName: *app, Code: fmt.Sprintf(code.LoadConfigCode, *app)},
-		{Path: "database/database.go", PackageName: *app, Code: code.DBConfigGo},
-		{Path: "types/dsn.go", PackageName: *app, Code: code.DSN},
-		{Path: "go.mod", PackageName: *app, GoVer: helpers.GetGoVersion(), Code: code.GoMod},
-		{Path: "go.sum", Code: code.GoSum},
+	AppStructure := []types.AppStructure{
+		{Path: "cmd/", FileName: "main.go", Code: code.MainCode},
+		{Path: "common/config/", FileName: "load.go", Code: code.LoadConfigCode},
+		{Path: "common/database/", FileName: "database.go", Code: code.DBConfigGo},
+		{Path: "common/helpers/", FileName: "db.go", Code: code.DBHelperCode},
+		{Path: "common/types/", FileName: "dsn.go", Code: code.DSN},
+		{Path: "/", FileName: "go.mod", Code: code.GoMod},
+		{Path: "/", FileName: "go.sum", Code: code.GoSum},
+		{Path: "/", FileName: fmt.Sprintf("config.%s", *config), Code: code.WriteAppConfiguration(*config)},
 	}
 
-	for _, r := range filloC {
-		err := home.GenerateAppCode(r)
-		helpers.ErrorWithLog(err)
+	for _, structure := range AppStructure {
+		if err := home.GenerateAppCode(structure.Code, structure.Path, structure.FileName, helpers.GetGoVersion(), *app, *config); err != nil {
+			return err
+		}
+
 	}
 	return nil
+
 }

@@ -1,9 +1,7 @@
 package types
 
 type AppStructure struct {
-	Path        string
-	PackageName string
-	Code        string
-	GoVer       string
-	File        string
+	Path     string
+	Code     string
+	FileName string
 }

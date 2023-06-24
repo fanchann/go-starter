@@ -1,20 +1,19 @@
 package code
 
-var DBConfigGo = `
-package database
+var DBConfigGo = `package database
 
 import (
 	"fmt"
 	"log"
 	"os"
-	"%s/common/types"
 
+	"{{.Package}}/common/types"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type DBConfig struct {
+type DB struct {
 	Driver   string ` + "`config:\"driver\"`" + `
 	Host     string ` + "`config:\"host\"`" + `
 	Username string ` + "`config:\"username\"`" + `
@@ -24,7 +23,7 @@ type DBConfig struct {
 	SSlmode  string ` + "`config:\"sslmode\"`" + `
 }
 
-func (d *DBConfig) DatabaseConnection() (*gorm.DB, error) {
+func (d *DB) DatabaseConnection() *gorm.DB {
 	var dialect gorm.Dialector
 	var dbConnection string
 
@@ -35,24 +34,24 @@ func (d *DBConfig) DatabaseConnection() (*gorm.DB, error) {
 	case "mysql":
 		dbConnection = fmt.Sprintf(types.MYSQL_CONFIG, d.Username, d.Password, d.Host, d.Port, d.DBName)
 		dialect = mysql.Open(dbConnection)
-	default:
-		return nil, fmt.Errorf("unsupported database driver: %s", d.Driver)
 	}
 
 	db, errConnect := gorm.Open(dialect, &gorm.Config{})
+
 	if errConnect != nil {
-		return nil, fmt.Errorf("error while connecting to database: %s", errConnect)
+		log.Fatalf("Error while connect to database :[%s]", errConnect)
+		os.Exit(1)
 	}
 
-	return db, nil
+	return db
 }
 `
 
 var DBHelperCode = `package helpers
 
 import (
-	"%s/common/config"
-	"%s/common/database"
+	"{{.Package}}/common/config"
+	"{{.Package}}/common/database"
 )
 
 func InitDatabase() *database.DB {
