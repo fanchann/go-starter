@@ -70,6 +70,11 @@ Structure reference
 ├── repository
 ```
 ## Running Your App
+install dependenies with command :
+```sh
+go mod tidy
+```
+after success installl dependencies run app with command :
 ```sh
 go run cmd/main.go -c config.toml
 ```
