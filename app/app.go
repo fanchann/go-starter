@@ -40,9 +40,9 @@ func GoStarter(app, config *string) error {
 		{Path: "common/config/", FileName: "load.go", Code: code.LoadConfigCode},
 		{Path: "common/database/", FileName: "database.go", Code: code.DBConfigGo},
 		{Path: "common/helpers/", FileName: "db.go", Code: code.DBHelperCode},
+		{Path: "common/helpers/", FileName: "migrate.go", Code: code.MigrateCode},
 		{Path: "common/types/", FileName: "dsn.go", Code: code.DSN},
 		{Path: "/", FileName: "go.mod", Code: code.GoMod},
-		{Path: "/", FileName: "go.sum", Code: code.GoSum},
 		{Path: "/", FileName: fmt.Sprintf("config.%s", *config), Code: code.WriteAppConfiguration(*config)},
 	}
 

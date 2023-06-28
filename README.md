@@ -8,6 +8,10 @@ This tool helps you to do the tedious work of setting configuration and creating
 ```sh
 go-starter -pkg=awesomeProject  -config={configurationFile}
 ```
+or 
+```sh
+go-starter -help
+```
 configurationFile: 
 - json
 - yaml
@@ -22,17 +26,17 @@ Database support:
 - postgres
 
 set database driver in configuration file\
-json example:
+`config.example.json` :
 ```json
 {
   "database": {
-    "driver": "your_db_driver", // your driver
+    "driver": "db_driver", // database driver [mysql / postgres]
     "host": "url", // <- database url
     "port": 3306, // <- port 
     "username": "root", // <- your username
     "password": "root", // <- your password
-    "name": "your_app",// <- your database to connect
-    "sslmode": "disabled", // <- if you use postgres, recomended to enabled
+    "name": "db_name",// <- your database to connect
+    "sslmode": "disable",
     /**
     database pooling
     **/
@@ -42,6 +46,12 @@ json example:
   }
 }
 ```
+## Database Driver in Go-Starter
+| `Driver`      | `Support` |
+| ----------- | ----------- |
+| Mysql       | ✅      |
+| Postgres    | ✅      |
+
 ## Installation
 ```sh
 go install github.com/fanchann/go-starter@latest
@@ -58,23 +68,24 @@ Structure reference
 │   ├── database
 │   │   └── database.go
 │   ├── helpers
-│   │   └── db.go
+│   │   ├── db.go
+│   │   └── migrate.go
 │   ├── middleware
 │   └── types
 │       └── dsn.go
-├── config.toml
+├── config.json
 ├── docs
 ├── go.mod
-├── go.sum
 ├── models
-├── repository
+└── repository
 ```
 ## Running Your App
-install dependenies with command :
+After generating template, install dependencies using the following command
 ```sh
 go mod tidy
 ```
-after success installl dependencies run app with command :
+This command will download and install the required dependencies for your project\
+After success install dependencies, run app with command :
 ```sh
 go run cmd/main.go -c config.toml
 ```

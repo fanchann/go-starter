@@ -35,7 +35,7 @@ func WriteAppConfiguration(extension string) string {
 			Username:     "username",
 			Password:     "password",
 			Name:         "db_name",
-			SSLMode:      "disabled",
+			SSLMode:      "disable",
 			MaxIdleConn:  30,
 			MaxOpenConn:  20,
 			LifeTimeConn: 40,
