@@ -10,20 +10,22 @@ import (
 	"github.com/fanchann/go-starter/helpers"
 )
 
-func GoStarter(app, config *string) error {
-	folderName := strings.ReplaceAll(*app, "/", "-")
+func GoStarter(app, extension, driver, host string, port int, username, password, dbname string) error {
+	folderName := strings.ReplaceAll(app, "/", "-")
 	home := functions.AppPath{BasePath: folderName}
 
 	folders := []string{
 		"cmd",
-		"common/config",
-		"common/database",
-		"common/helpers",
-		"common/middleware",
-		"common/types",
-		"docs",
-		"models",
-		"repository",
+		"app/repositories",
+		"app/controllers",
+		"app/domain/models",
+		"app/domain/types",
+		"app/routers",
+		"app/middlewares",
+		"app/services",
+		"lib",
+		"utils",
+		"config",
 	}
 
 	for _, folder := range folders {
@@ -37,17 +39,14 @@ func GoStarter(app, config *string) error {
 
 	appStructure := []types.AppStructure{
 		{Path: "cmd/", FileName: "main.go", Code: code.MainCode},
-		{Path: "common/config/", FileName: "load.go", Code: code.LoadConfigCode},
-		{Path: "common/database/", FileName: "database.go", Code: code.DBConfigGo},
-		{Path: "common/helpers/", FileName: "db.go", Code: code.DBHelperCode},
-		{Path: "common/helpers/", FileName: "migrate.go", Code: code.MigrateCode},
-		{Path: "common/types/", FileName: "dsn.go", Code: code.DSN},
+		{Path: "config/", FileName: fmt.Sprintf("%s_reader.go", extension), Code: code.LoadConfigCode},
+		{Path: "lib/", FileName: fmt.Sprintf("%s.go", driver), Code: code.DBLib},
 		{Path: "/", FileName: "go.mod", Code: code.GoMod},
-		{Path: "/", FileName: fmt.Sprintf("config.%s", *config), Code: code.WriteAppConfiguration(*config)},
+		{Path: "/", FileName: fmt.Sprintf("config.%s", extension), Code: code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)},
 	}
 
 	for _, structure := range appStructure {
-		if err := home.GenerateAppCode(structure.Code, structure.Path, structure.FileName, helpers.GetGoVersion(), *app, *config); err != nil {
+		if err := home.GenerateAppCode(structure.Code, structure.Path, structure.FileName, helpers.GetGoVersion(), app, extension); err != nil {
 			return err
 		}
 

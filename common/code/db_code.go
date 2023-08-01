@@ -1,16 +1,20 @@
 package code
 
-var DBConfigGo = `package database
+var DBLib = `package lib
 
 import (
 	"fmt"
 	"log"
 	"os"
 
-	"{{.Package}}/common/types"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+)
+
+var (
+	MYSQL_CONFIG    = "%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+	POSTGRES_CONFIG = "host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=Asia/Shanghai"
 )
 
 type DB struct {
@@ -29,10 +33,10 @@ func (d *DB) DatabaseConnection() *gorm.DB {
 
 	switch d.Driver {
 	case "postgres":
-		dbConnection = fmt.Sprintf(types.POSTGRES_CONFIG, d.Host, d.Username, d.Password, d.DBName, d.Port, d.SSlmode)
+		dbConnection = fmt.Sprintf(POSTGRES_CONFIG, d.Host, d.Username, d.Password, d.DBName, d.Port, d.SSlmode)
 		dialect = postgres.Open(dbConnection)
 	case "mysql":
-		dbConnection = fmt.Sprintf(types.MYSQL_CONFIG, d.Username, d.Password, d.Host, d.Port, d.DBName)
+		dbConnection = fmt.Sprintf(MYSQL_CONFIG, d.Username, d.Password, d.Host, d.Port, d.DBName)
 		dialect = mysql.Open(dbConnection)
 	}
 
@@ -45,32 +49,4 @@ func (d *DB) DatabaseConnection() *gorm.DB {
 
 	return db
 }
-`
-
-var DBHelperCode = `package helpers
-
-import (
-	"{{.Package}}/common/config"
-	"{{.Package}}/common/database"
-)
-
-func InitDatabase() *database.DB {
-	return &database.DB{
-		Driver:   config.GetString("database.driver"),
-		Host:     config.GetString("database.host"),
-		Username: config.GetString("database.username"),
-		Password: config.GetString("database.password"),
-		Port:     config.GetInt("database.port"),
-		DBName:   config.GetString("database.name"),
-		SSlmode:  config.GetString("database.sslmode"),
-	}
-}
-`
-
-var DSN = `package types
-
-var (
-	MYSQL_CONFIG    = "%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local"
-	POSTGRES_CONFIG = "host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=Asia/Shanghai"
-)
 `

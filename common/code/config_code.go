@@ -26,15 +26,15 @@ type AppConfig struct {
 	Database DatabaseConfig `toml:"database" yaml:"database" json:"database"`
 }
 
-func WriteAppConfiguration(extension string) string {
+func WriteAppConfiguration(extension, host, driver, username, password, dbname string, port int) string {
 	config := AppConfig{
 		Database: DatabaseConfig{
-			Driver:       "driver",
-			Host:         "localhost",
-			Port:         6969,
-			Username:     "username",
-			Password:     "password",
-			Name:         "db_name",
+			Driver:       driver,
+			Host:         host,
+			Port:         port,
+			Username:     username,
+			Password:     password,
+			Name:         dbname,
 			SSLMode:      "disable",
 			MaxIdleConn:  30,
 			MaxOpenConn:  20,

@@ -1,5 +1,6 @@
 package code
 
+// / "{{.Package}}/helpers"
 var MainCode = `package main
 
 import (
@@ -7,8 +8,7 @@ import (
 	"log"
 	"os"
 
-	"{{.Package}}/common/config"
-	"{{.Package}}/common/helpers"
+	"{{.Package}}/config"
 )
 
 var fileConfiguration *string
@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db := helpers.InitDatabase().DatabaseConnection()
+	db := config.InitDatabase().DatabaseConnection()
 
 	// ping to database
 	responseDB, _ := db.DB()

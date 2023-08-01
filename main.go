@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 
 	"github.com/fanchann/go-starter/app"
@@ -9,24 +8,23 @@ import (
 	"github.com/fanchann/go-starter/helpers"
 )
 
-var pkg *string
-var cfg *string
-var help *bool
+var (
+	configFileOptions = []string{"json", "yaml", "toml"}
+	driverDBOptions   = []string{"mysql", "postgres"}
 
-func init() {
-	pkg = flag.String("pkg", "generateFromGoStarter_", "fill your app-name")
-	cfg = flag.String("config", "toml", "generate configuration file")
-	help = flag.Bool("help", false, "show all command in go-starter")
-	flag.Parse()
-}
+	appName   = helpers.PromptNamePackage()
+	configFmt = helpers.PromptArrayString("configuration format", configFileOptions)
+	dbDriver  = helpers.PromptArrayString("database driver", driverDBOptions)
+	dbHost    = helpers.PromptString("database host [example : localhost]")
+	dbUser    = helpers.PromptString("username database")
+	dbPass    = helpers.PromptString("password database")
+	dbName    = helpers.PromptString("database name")
+	dbPort    = helpers.PromptInteger("port database")
+)
 
 func main() {
-	if *help {
-		fmt.Printf("%s\n%s \n", types.Logo, types.Help)
-		return
-	}
 
 	fmt.Printf("%s \n", types.Logo)
-	err := app.GoStarter(pkg, cfg)
+	err := app.GoStarter(appName, configFmt, dbDriver, dbHost, dbPort, dbUser, dbPass, dbName)
 	helpers.ErrorWithLog(err)
 }

@@ -5,8 +5,8 @@
   life_time_conn = 40
   max_idle_conn = 30
   max_open_conn = 20
-  name = "app_cerud"
-  password = "root"
+  name = "database"
+  password = "password"
   port = 3306
-  sslmode = "disabled"
-  username = "fanchann"
+  sslmode = "disable"
+  username = "user"

@@ -19,21 +19,45 @@ func init() {
 }
 
 func TestCreateJson(t *testing.T) {
-	s := code.WriteAppConfiguration("json")
+	extension := "json"
+	host := "localhost"
+	driver := "mysql"
+	username := "user"
+	password := "password"
+	dbname := "database"
+	port := 3306
+
+	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
 
 	err := os.WriteFile(dirTest+"/settings.json", []byte(s), perm)
 	helpers.ErrorWithLog(err)
 }
 
 func TestCreateToml(t *testing.T) {
-	s := code.WriteAppConfiguration("toml")
+	extension := "toml"
+	host := "localhost"
+	driver := "mysql"
+	username := "user"
+	password := "password"
+	dbname := "database"
+	port := 3306
+
+	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
 
 	err := os.WriteFile(dirTest+"/settings.toml", []byte(s), perm)
 	helpers.ErrorWithLog(err)
 }
 
 func TestCreateYaml(t *testing.T) {
-	s := code.WriteAppConfiguration("yaml")
+	extension := "yaml"
+	host := "localhost"
+	driver := "mysql"
+	username := "user"
+	password := "password"
+	dbname := "database"
+	port := 3306
+
+	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
 
 	err := os.WriteFile(dirTest+"/settings.yaml", []byte(s), perm)
 	helpers.ErrorWithLog(err)
