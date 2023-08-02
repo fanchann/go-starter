@@ -36,7 +36,7 @@ Structure reference
 ├── cmd
 │   └── main.go
 ├── config
-│   └── toml_reader.go -> filename follows your configuration
+│   └── toml_reader.go // -> filename follows your configuration
 ├── config.toml
 ├── go.mod
 ├── go.sum
