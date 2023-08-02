@@ -6,16 +6,8 @@ This tool helps you to do the tedious work of setting configuration and creating
 
 ## Running Go-Starter
 ```sh
-go-starter -pkg=awesomeProject  -config={configurationFile}
+go-starter
 ```
-or 
-```sh
-go-starter -help
-```
-configurationFile: 
-- json
-- yaml
-- toml [default]
 
 ![go-starter](/assets/go-starter.gif)
 
@@ -24,60 +16,33 @@ This tool adopt [gorm](https://gorm.io/)\
 Database support:
 - mysql
 - postgres
-
-set database driver in configuration file\
-`config.example.json` :
-```json
-{
-  "database": {
-    "driver": "db_driver", // database driver [mysql / postgres]
-    "host": "url", // <- database url
-    "port": 3306, // <- port 
-    "username": "root", // <- your username
-    "password": "root", // <- your password
-    "name": "db_name",// <- your database to connect
-    "sslmode": "disable",
-    /**
-    database pooling
-    **/
-    "max_idle_conn": 30,
-    "max_open_conn": 20,
-    "life_time_conn": 40
-  }
-}
-```
-## Database Driver in Go-Starter
-| `Driver`      | `Support` |
-| ----------- | ----------- |
-| Mysql       | ✅      |
-| Postgres    | ✅      |
-
 ## Installation
 ```sh
 go install github.com/fanchann/go-starter@latest
 ```
 ## Structure
 Structure reference
-- [Golang Project Structure](https://github.com/Mindinventory/Golang-Project-Structure)
+- [Golang standards project layout](https://github.com/golang-standards/project-layout/)
 ```sh
+├── app
+│   ├── controllers
+│   ├── domain
+│   │   ├── models
+│   │   └── types
+│   ├── middlewares
+│   ├── repositories
+│   ├── routers
+│   └── services
 ├── cmd
-│   └── main.go
-├── common
-│   ├── config
-│   │   └── load.go
-│   ├── database
-│   │   └── database.go
-│   ├── helpers
-│   │   ├── db.go
-│   │   └── migrate.go
-│   ├── middleware
-│   └── types
-│       └── dsn.go
-├── config.json
-├── docs
+│   └── main.go
+├── config
+│   └── toml_reader.go -> filename follows your configuration
+├── config.toml
 ├── go.mod
-├── models
-└── repository
+├── go.sum
+├── lib
+│   └── mysql.go // -> filename follows your configuration 
+└── utils
 ```
 ## Running Your App
 After generating template, install dependencies using the following command
