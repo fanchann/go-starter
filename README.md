@@ -9,7 +9,7 @@ This tool helps you to do the tedious work of setting configuration and creating
 go-starter
 ```
 
-![go-starter](/assets/go-starter.gif)
+![go-starter](/assets/v2.0.gif)
 
 ## About Go-Starter
 This tool adopt [gorm](https://gorm.io/)\
