@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	configFileOptions = []string{"json", "yaml", "toml"}
+	configFileOptions = []string{"json", "yaml", "toml", "env"}
 	driverDBOptions   = []string{"mysql", "postgres"}
 
 	appName   = helpers.PromptNamePackage()
