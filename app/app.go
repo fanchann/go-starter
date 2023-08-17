@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/fanchann/go-starter/common/code"
@@ -42,6 +43,7 @@ func GoStarter(app, extension, driver, host string, port int, username, password
 		{Path: "config/", FileName: namingFileSelection(extension), Code: writeFileCodeSelection(extension, code.WriteAppConfiguration("env", host, driver, username, password, dbname, port), code.LoadConfigCode)},
 		{Path: "lib/", FileName: fmt.Sprintf("%s.go", driver), Code: writeFileCodeSelection(extension, code.DBLibWithEnvSetting, code.DBLib)},
 		{Path: "/", FileName: "go.mod", Code: writeFileCodeSelection(extension, code.GoModEnv, code.GoMod)},
+		{Path: "/", FileName: "docker-compose.yaml", Code: code.GenerateDockerCompose(driver, username, password, dbname, strconv.Itoa(port))},
 	}
 
 	if extension != "env" {
