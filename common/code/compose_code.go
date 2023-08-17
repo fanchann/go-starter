@@ -46,41 +46,50 @@ func GenerateDockerCompose(driver, dbUsername, dbPassword, dbName, dbPort string
 
 	switch driver {
 	case "postgres":
-		posEnv := map[string]string{
-			"POSTGRES_DB":       dbName,
-			"POSTGRES_USER":     dbUsername,
-			"POSTGRES_PASSWORD": dbPassword,
+		composeFormat = dockerCompose{
+			Version: "3.8",
+			Services: map[string]service{
+				"postgres_database": {
+					Image:         "bitnami/postgresql:latest",
+					ContainerName: "postgres_database",
+					Ports:         []string{fmt.Sprintf("%v:%v", dbPort, dbPort)},
+					Environment: map[string]string{
+						"POSTGRES_DB":       dbName,
+						"POSTGRES_USER":     dbUsername,
+						"POSTGRES_PASSWORD": dbPassword,
+					},
+					Volumes: []string{"postgres_volume:/var/lib/postgresql/data"},
+				},
+			},
+			Volumes: &postgresVolume{
+				PostgresData: volume{Name: "postgres_volume"},
+			},
 		}
-		composeFormat = createDockerCompose("3.8", "bitnami/postgresql:latest", "postgres_database", dbName, dbPort, dbPassword, posEnv, "/var/lib/postgresql/data", &postgresVolume{PostgresData: volume{Name: "postgres_volume"}})
 		composeByte, err := yaml.Marshal(composeFormat)
 		helpers.ErrorWithLog(err)
 		return string(composeByte)
 	case "mysql":
-		mysqlEnv := map[string]string{
-			"MYSQL_ROOT_PASSWORD": dbPassword,
+		composeFormat = dockerCompose{
+			Version: "3.8",
+			Services: map[string]service{
+				"mysql_database": {
+					Image:         "mysql:latest",
+					ContainerName: "mysql_database",
+					Ports:         []string{fmt.Sprintf("%v:%v", dbPort, dbPort)},
+					Environment: map[string]string{
+						"MYSQL_ROOT_PASSWORD": dbPassword,
+					},
+					Volumes: []string{"mysql_volume:/var/lib/mysql"},
+				},
+			},
+			Volumes: &mysqlVolume{
+				MysqlData: volume{Name: "mysql_volume"},
+			},
 		}
-		composeFormat = createDockerCompose("3.8", "mysql:latest", "mysql_database", dbName, dbPort, dbPassword, mysqlEnv, "/var/lib/mysql", &mysqlVolume{MysqlData: volume{Name: "mysql_volume"}})
-		composeFormat.Volumes.isVolumeSelection()
 		composeByte, err := yaml.Marshal(composeFormat)
 		helpers.ErrorWithLog(err)
 		return string(composeByte)
 	default:
 		return ""
-	}
-}
-
-func createDockerCompose(version, imageName, containerName, dbName, dbPort, dbPassword string, environment map[string]string, savedData string, volSelect volumeSelection) dockerCompose {
-	return dockerCompose{
-		Version: version,
-		Services: map[string]service{
-			containerName: {
-				Image:         imageName,
-				ContainerName: containerName,
-				Ports:         []string{fmt.Sprintf("%v:%v", dbPort, dbPort)},
-				Environment:   environment,
-				Volumes:       []string{fmt.Sprintf("%s:%s", volSelect, savedData)},
-			},
-		},
-		Volumes: volSelect,
 	}
 }
