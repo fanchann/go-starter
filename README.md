@@ -18,8 +18,13 @@ Database support:
 - postgres
 ## Installation
 ```sh
+go install github.com/fanchann/go-starter@v.2.4
+```
+or
+```sh
 go install github.com/fanchann/go-starter@latest
 ```
+
 ## Structure
 Structure reference
 - [Golang standards project layout](https://github.com/golang-standards/project-layout/)
