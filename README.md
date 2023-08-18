@@ -20,10 +20,8 @@ Database support:
 ```sh
 go install github.com/fanchann/go-starter@v.2.4
 ```
-or
-```sh
-go install github.com/fanchann/go-starter@latest
-```
+
+see older version here [version](https://github.com/fanchann/go-starter/tags)
 
 ## Structure
 Structure reference
