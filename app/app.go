@@ -7,9 +7,14 @@ import (
 
 	"github.com/fanchann/go-starter/common/code"
 	"github.com/fanchann/go-starter/common/functions"
-	"github.com/fanchann/go-starter/common/types"
 	"github.com/fanchann/go-starter/helpers"
 )
+
+type AppStructure struct {
+	Path     string
+	Code     string
+	FileName string
+}
 
 func GoStarter(app, extension, driver, host string, port int, username, password, dbname string) error {
 	folderName := strings.ReplaceAll(app, "/", "-")
@@ -38,7 +43,7 @@ func GoStarter(app, extension, driver, host string, port int, username, password
 		}
 	}
 
-	appStructure := []types.AppStructure{
+	appStructure := []AppStructure{
 		{Path: "cmd/", FileName: "main.go", Code: writeFileCodeSelection(extension, code.MainCodeEnvConfig, code.MainCode)},
 		{Path: "config/", FileName: namingFileSelection(extension), Code: writeFileCodeSelection(extension, code.WriteAppConfiguration("env", host, driver, username, password, dbname, port), code.LoadConfigCode)},
 		{Path: "lib/", FileName: fmt.Sprintf("%s.go", driver), Code: writeFileCodeSelection(extension, code.DBLibWithEnvSetting, code.DBLib)},
@@ -47,7 +52,7 @@ func GoStarter(app, extension, driver, host string, port int, username, password
 	}
 
 	if extension != "env" {
-		appStructure = append(appStructure, types.AppStructure{
+		appStructure = append(appStructure, AppStructure{
 			Path:     "/",
 			FileName: fmt.Sprintf("config.%s", extension),
 			Code:     code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port),
