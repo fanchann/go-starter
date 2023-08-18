@@ -2,6 +2,7 @@ package code
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/pelletier/go-toml"
 	"gopkg.in/yaml.v3"
@@ -55,6 +56,30 @@ func WriteAppConfiguration(extension, host, driver, username, password, dbname s
 		yamlCfg, err := yaml.Marshal(config)
 		helpers.ErrorWithLog(err)
 		return string(yamlCfg)
+	case "env":
+		environment := func(config DatabaseConfig) string {
+			var content string
+
+			entries := []struct {
+				key   string
+				value interface{}
+			}{
+				{"db_driver", config.Driver},
+				{"db_host", config.Host},
+				{"db_username", config.Username},
+				{"db_password", config.Password},
+				{"db_port", config.Port},
+				{"db_name", config.Name},
+				{"db_sslmode", config.SSLMode},
+			}
+
+			for _, entry := range entries {
+				content += fmt.Sprintf("%s = \"%v\"\n", entry.key, entry.value)
+			}
+
+			return content
+		}(config.Database)
+		return environment
 	default:
 		tomlCfg, err := toml.Marshal(config)
 		helpers.ErrorWithLog(err)

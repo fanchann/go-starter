@@ -4,12 +4,17 @@ import (
 	"fmt"
 
 	"github.com/fanchann/go-starter/app"
-	"github.com/fanchann/go-starter/common/types"
 	"github.com/fanchann/go-starter/helpers"
 )
 
 var (
-	configFileOptions = []string{"json", "yaml", "toml"}
+	logo = `
+	┌─┐┌─┐   ┌─┐┌┬┐┌─┐┬─┐┌┬┐┌─┐┬─┐
+	│ ┬│ │───└─┐ │ ├─┤├┬┘ │ ├┤ ├┬┘
+	└─┘└─┘   └─┘ ┴ ┴ ┴┴└─ ┴ └─┘┴└─
+	`
+
+	configFileOptions = []string{"json", "yaml", "toml", "env"}
 	driverDBOptions   = []string{"mysql", "postgres"}
 
 	appName   = helpers.PromptNamePackage()
@@ -23,8 +28,7 @@ var (
 )
 
 func main() {
-
-	fmt.Printf("%s \n", types.Logo)
+	fmt.Printf("%v\n", logo)
 	err := app.GoStarter(appName, configFmt, dbDriver, dbHost, dbPort, dbUser, dbPass, dbName)
 	helpers.ErrorWithLog(err)
 }

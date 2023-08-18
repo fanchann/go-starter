@@ -62,3 +62,18 @@ func TestCreateYaml(t *testing.T) {
 	err := os.WriteFile(dirTest+"/settings.yaml", []byte(s), perm)
 	helpers.ErrorWithLog(err)
 }
+
+func TestCreateEnvFile(t *testing.T) {
+	extension := "env"
+	host := "localhost"
+	driver := "mysql"
+	username := "user"
+	password := "password"
+	dbname := "database"
+	port := 3306
+
+	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
+
+	err := os.WriteFile(dirTest+"/.env", []byte(s), perm)
+	helpers.ErrorWithLog(err)
+}
