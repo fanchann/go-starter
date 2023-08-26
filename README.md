@@ -39,11 +39,12 @@ Structure reference
 ├── cmd
 │   └── main.go
 ├── config
-│   └── toml_reader.go // -> filename follows your configuration
-├── config.toml
+│   ├── postgres.go ## -> filename follows your configuration
+│   └── yaml_reader.go ## -> filename follows your configuration
+├── config.yaml
+├── docker-compose.yaml
 ├── go.mod
-├── lib
-│   └── mysql.go // -> filename follows your configuration 
+├── go.sum
 └── utils
 ```
 ## Running Your App
