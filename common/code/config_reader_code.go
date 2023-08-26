@@ -10,11 +10,10 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
-	"{{.Package}}/lib"
 )
 
-func InitDatabase() *lib.DB {
-	return &lib.DB{
+func InitDatabase() *DB {
+	return &DB{
 		Driver:   GetString("database.driver"),
 		Host:     GetString("database.host"),
 		Username: GetString("database.username"),
@@ -57,7 +56,7 @@ func (c *Configuration) Initialize() error {
 		return err
 	}
 
-	var dbStructure lib.DB
+	var dbStructure DB
 	err = viper.Unmarshal(&dbStructure, func(c *mapstructure.DecoderConfig) {
 		c.TagName = "mapstructure"
 	})
@@ -92,5 +91,32 @@ func GetInt(key string) int {
 func GetBool(key string) bool {
 	checkKey(key)
 	return viper.GetBool(key)
+}
+`
+var ConfigCodeEnv = `package config
+
+import (
+	"os"
+
+	"github.com/joho/godotenv"
+)
+
+type Config interface {
+	Get(key string) string
+}
+
+type configImpl struct {
+}
+
+func (config *configImpl) Get(key string) string {
+	return os.Getenv(key)
+}
+
+func New(filenames ...string) Config {
+	err := godotenv.Load(filenames...)
+	if err != nil {
+		panic(err)
+	}
+	return &configImpl{}
 }
 `

@@ -1,6 +1,6 @@
 package code
 
-var DBLib = `package lib
+var DBLib = `package config
 
 import (
 	"fmt"
@@ -51,15 +51,13 @@ func (d *DB) DatabaseConnection() *gorm.DB {
 }
 `
 
-var DBLibWithEnvSetting = `package lib
+var DBConfigWithEnvSetting = `package config
 
 import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -70,22 +68,16 @@ var (
 	POSTGRES_CONFIG = "host=%s user=%s password=%s dbname=%s port=%v sslmode=%s TimeZone=Asia/Shanghai"
 )
 
-func DatabaseConnection(configFile string) *gorm.DB {
+func DatabaseConnection(configuration Config) *gorm.DB {
 	var dialect gorm.Dialector
 	var dbConnection string
 
-	filePath := path.Join("config", configFile)
-
-	if err := godotenv.Load(filePath); err != nil {
-		log.Fatalf("error while read configuration, %s", err.Error())
-	}
-
 	switch os.Getenv("db_driver") {
 	case "postgres":
-		dbConnection = fmt.Sprintf(POSTGRES_CONFIG, readEnvironment("db_host"), readEnvironment("db_username"), readEnvironment("db_password"), readEnvironment("db_name"), readEnvironment("db_port"), readEnvironment("db_sslmode"))
+		dbConnection = fmt.Sprintf(POSTGRES_CONFIG, configuration.Get("db_host"), configuration.Get("db_username"), configuration.Get("db_password"), configuration.Get("db_name"), configuration.Get("db_port"), configuration.Get("db_sslmode"))
 		dialect = postgres.Open(dbConnection)
 	case "mysql":
-		dbConnection = fmt.Sprintf(MYSQL_CONFIG, readEnvironment("db_username"), readEnvironment("db_password"), readEnvironment("db_host"), readEnvironment("db_port"), readEnvironment("db_name"))
+		dbConnection = fmt.Sprintf(MYSQL_CONFIG, configuration.Get("db_username"), configuration.Get("db_password"), configuration.Get("db_host"), configuration.Get("db_port"), configuration.Get("db_name"))
 		dialect = mysql.Open(dbConnection)
 	}
 
@@ -97,9 +89,5 @@ func DatabaseConnection(configFile string) *gorm.DB {
 
 	return db
 
-}
-
-func readEnvironment(key string) string {
-	return os.Getenv(key)
 }
 `

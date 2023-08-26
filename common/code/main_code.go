@@ -49,7 +49,7 @@ import (
 	"log"
 	"os"
 
-	"{{.Package}}/lib"
+	"{{.Package}}/config"
 )
 
 var fileConfiguration *string
@@ -64,8 +64,9 @@ func init() {
 }
 
 func main() {
-	dbConnection := lib.DatabaseConnection(*fileConfiguration)
+	configuration := config.New(*fileConfiguration)
 
+	dbConnection := config.DatabaseConnection(configuration)
 	// ping to database
 	responseDB, _ := dbConnection.DB()
 	if err := responseDB.Ping(); err != nil {

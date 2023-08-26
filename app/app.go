@@ -29,7 +29,6 @@ func GoStarter(app, extension, driver, host string, port int, username, password
 		"app/routers",
 		"app/middlewares",
 		"app/services",
-		"lib",
 		"utils",
 		"config",
 	}
@@ -45,18 +44,21 @@ func GoStarter(app, extension, driver, host string, port int, username, password
 
 	appStructure := []AppStructure{
 		{Path: "cmd/", FileName: "main.go", Code: writeFileCodeSelection(extension, code.MainCodeEnvConfig, code.MainCode)},
-		{Path: "config/", FileName: namingFileSelection(extension), Code: writeFileCodeSelection(extension, code.WriteAppConfiguration("env", host, driver, username, password, dbname, port), code.LoadConfigCode)},
-		{Path: "lib/", FileName: fmt.Sprintf("%s.go", driver), Code: writeFileCodeSelection(extension, code.DBLibWithEnvSetting, code.DBLib)},
+		{Path: "config/", FileName: fmt.Sprintf("%s.go", driver), Code: writeFileCodeSelection(extension, code.DBConfigWithEnvSetting, code.DBLib)},
+		{Path: pathSelection(extension), FileName: namingFileSelection(extension), Code: writeFileCodeSelection(extension, code.WriteAppConfiguration("env", host, driver, username, password, dbname, port), code.LoadConfigCode)},
 		{Path: "/", FileName: "go.mod", Code: writeFileCodeSelection(extension, code.GoModEnv, code.GoMod)},
 		{Path: "/", FileName: "docker-compose.yaml", Code: code.GenerateDockerCompose(driver, username, password, dbname, strconv.Itoa(port))},
 	}
 
-	if extension != "env" {
+	if extension == "env" {
+		appStructure = append(appStructure, AppStructure{Path: "config/", FileName: "config.go", Code: writeFileCodeSelection(extension, code.ConfigCodeEnv, "")})
+	} else {
 		appStructure = append(appStructure, AppStructure{
 			Path:     "/",
 			FileName: fmt.Sprintf("config.%s", extension),
 			Code:     code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port),
 		})
+
 	}
 
 	for _, structure := range appStructure {
@@ -82,4 +84,11 @@ func namingFileSelection(extension string) string {
 		return ".env"
 	}
 	return fmt.Sprintf("%s_reader.go", extension)
+}
+
+func pathSelection(extension string) string {
+	if extension != "env" {
+		return "config/"
+	}
+	return "/"
 }
