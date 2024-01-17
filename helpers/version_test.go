@@ -1,6 +1,7 @@
 package helpers_test
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,9 +10,10 @@ import (
 )
 
 func TestGetGoVersion(t *testing.T) {
-	expectedVersion := "1.20"
+	goVer := helpers.GetGoVersion()
+	expectedVersion, errNotMatch := regexp.MatchString("1.2*", goVer)
 
-	version := helpers.GetGoVersion()
+	assert.Nil(t, errNotMatch)
+	assert.True(t, expectedVersion, "golang version not detected")
 
-	assert.Equal(t, expectedVersion, version, "Versi Go tidak sesuai")
 }

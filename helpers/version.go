@@ -7,9 +7,8 @@ import (
 
 func GetGoVersion() string {
 	execRes, err := exec.Command("go", "version").Output()
-	if err != nil {
-		panic(err)
-	}
+	ErrorWithLog(err)
+
 	getVer := regexp.MustCompile(`\d+\.\d+`)
 	version := getVer.FindString(string(execRes))
 
