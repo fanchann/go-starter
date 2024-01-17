@@ -30,7 +30,8 @@ var (
 
 	mongoYamlConfig = map[string]interface{}{
 		"database": map[string]interface{}{
-			"url": "mongodb://localhost:27017",
+			"url":  "mongodb://localhost:27017",
+			"name": "test",
 		},
 	}
 )

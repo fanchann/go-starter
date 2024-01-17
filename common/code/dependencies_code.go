@@ -1,7 +1,7 @@
 package code
 
 var (
-	MongoDBDependencies = `module {{.PackageName}}
+	MongoDBDependencies = `module {{.Package}}
 
 	go {{.GoVersion}}
 	
@@ -41,7 +41,7 @@ var (
 		gopkg.in/yaml.v3 v3.0.1 // indirect
 	)
 	`
-	PostgresDependencies = `module {{.PackageName}}
+	PostgresDependencies = `module {{.Package}}
 
 go {{.GoVersion}}
 
@@ -80,7 +80,7 @@ require (
 )
 `
 
-	MysqlDependencies = `module {{.PackageName}}
+	MysqlDependencies = `module {{.Package}}
 
 go {{.GoVersion}}
 

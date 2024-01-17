@@ -1,80 +1,94 @@
 package code
 
-var MainCode = `package main
+var (
+	MysqlMain = `package main
 
-import (
-	"flag"
-	"log"
-	"os"
+	import (
+		"flag"
+		"fmt"
 
-	"{{.Package}}/config"
+		"{{.Package}}/config"
+		"{{.Package}}/helpers"
+	)
+	
+	var stage *string
+	
+	func init() {
+		stage = flag.String("s", "dev", "❌ please input stage !")
+		flag.Parse()
+	}
+	
+	func main() {
+		v := helpers.NewViper(*stage)
+		db := config.NewMysqlConnection(v)
+	
+		d, err := db.DB()
+		helpers.ErrorLogger(err)
+	
+		err2 := d.Ping()
+		helpers.ErrorLogger(err2)
+	
+		fmt.Println("✅ connected")
+	}
+	`
+
+	PostgresMain = `package main
+
+	import (
+		"{{.Package}}/config"
+		"{{.Package}}/helpers"
+		"flag"
+		"fmt"
+	)
+	
+	var stage *string
+	
+	func init() {
+		stage = flag.String("s", "dev", "❌ please input stage !")
+		flag.Parse()
+	}
+	
+	func main() {
+		v := config.NewViper(*stage)
+		db := config.NewPostgresConnection(v)
+	
+		d, err := db.DB()
+		helpers.ErrorLogger(err)
+	
+		err2 := d.Ping()
+		helpers.ErrorLogger(err2)
+	
+		fmt.Println("✅ connected")
+	}
+	`
+
+	MongoMain = `package main
+
+	import (
+		"{{.Package}}/config"
+		"{{.Package}}/helpers"
+		"context"
+		"flag"
+		"fmt"
+	
+		"go.mongodb.org/mongo-driver/mongo/readpref"
+	)
+	
+	var stage *string
+	
+	func init() {
+		stage = flag.String("s", "dev", "❌ please input stage !")
+		flag.Parse()
+	}
+	
+	func main() {
+		v := config.NewViper(*stage)
+		db := config.NewMongoConnection(v)
+	
+		err := db.Client().Ping(context.Background(), &readpref.ReadPref{})
+		helpers.ErrorLogger(err)
+	
+		fmt.Println("✅ connected")
+	}
+	`
 )
-
-var fileConfiguration *string
-
-/*
-you can change the configuration file
-*/
-
-func init() {
-	fileConfiguration = flag.String("c", "config.{{.Extension}}", "Insert your configuration setting")
-	flag.Parse()
-}
-
-func main() {
-	err := config.NewConfiguration(*fileConfiguration).Initialize()
-	if err != nil {
-		log.Fatalf("Error while read the configuration (%s)", err)
-		os.Exit(1)
-	}
-
-	db := config.InitDatabase().DatabaseConnection()
-
-	// ping to database
-	responseDB, _ := db.DB()
-	if err := responseDB.Ping(); err != nil {
-		log.Fatalln("Failed to connect database [%w]", err.Error())
-		os.Exit(1)
-	}
-
-	// if database successfully connected
-	log.Println("[ Success conected to database ]")
-}
-`
-
-var MainCodeEnvConfig = `package main
-
-import (
-	"flag"
-	"log"
-	"os"
-
-	"{{.Package}}/config"
-)
-
-var fileConfiguration *string
-
-/*
-you can change the configuration file
-*/
-
-func init() {
-	fileConfiguration = flag.String("c", ".env", "Insert your configuration setting")
-	flag.Parse()
-}
-
-func main() {
-	configuration := config.New(*fileConfiguration)
-
-	dbConnection := config.DatabaseConnection(configuration)
-	// ping to database
-	responseDB, _ := dbConnection.DB()
-	if err := responseDB.Ping(); err != nil {
-		log.Fatalln("Failed to connect database [%w]", err.Error())
-		os.Exit(1)
-	}
-
-	// if database successfully connected
-	log.Println("[ Success conected to database ]")
-}
-`

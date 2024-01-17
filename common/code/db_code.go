@@ -1,93 +1,99 @@
 package code
 
-var DBLib = `package config
+var MysqlDBConfig = `package config
 
 import (
+	"blueprint/mysql/helpers"
 	"fmt"
-	"log"
-	"os"
+	"time"
 
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var (
-	MYSQL_CONFIG    = "%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local"
-	POSTGRES_CONFIG = "host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=Asia/Shanghai"
-)
+func NewMysqlConnection(v *viper.Viper) *gorm.DB {
+	username := v.GetString("database.username")
+	password := v.GetString("database.password")
+	host := v.GetString("database.host")
+	port := v.GetInt("database.port")
+	database := v.GetString("database.name")
+	idleConnection := v.GetInt("database.pool.idle")
+	maxConnection := v.GetInt("database.pool.max")
+	maxLifeTimeConnection := v.GetInt("database.pool.lifetime")
 
-type DB struct {
-	Driver   string ` + "`config:\"driver\"`" + `
-	Host     string ` + "`config:\"host\"`" + `
-	Username string ` + "`config:\"username\"`" + `
-	Password string ` + "`config:\"password\"`" + `
-	Port     int    ` + "`config:\"port\"`" + `
-	DBName   string ` + "`config:\"name\"`" + `
-	SSlmode  string ` + "`config:\"sslmode\"`" + `
-}
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, database)
 
-func (d *DB) DatabaseConnection() *gorm.DB {
-	var dialect gorm.Dialector
-	var dbConnection string
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	helpers.ErrorLogger(err)
 
-	switch d.Driver {
-	case "postgres":
-		dbConnection = fmt.Sprintf(POSTGRES_CONFIG, d.Host, d.Username, d.Password, d.DBName, d.Port, d.SSlmode)
-		dialect = postgres.Open(dbConnection)
-	case "mysql":
-		dbConnection = fmt.Sprintf(MYSQL_CONFIG, d.Username, d.Password, d.Host, d.Port, d.DBName)
-		dialect = mysql.Open(dbConnection)
-	}
+	connection, err := db.DB()
+	helpers.ErrorLogger(err)
 
-	db, errConnect := gorm.Open(dialect, &gorm.Config{})
-
-	if errConnect != nil {
-		log.Fatalf("Error while connect to database :[%s]", errConnect)
-		os.Exit(1)
-	}
+	connection.SetMaxIdleConns(idleConnection)
+	connection.SetMaxOpenConns(maxConnection)
+	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
 
 	return db
 }
 `
 
-var DBConfigWithEnvSetting = `package config
+var PostgresDBConfig = `package config
 
 import (
+	"blueprint/postgres/helpers"
 	"fmt"
-	"log"
-	"os"
 
-	"gorm.io/driver/mysql"
+	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var (
-	MYSQL_CONFIG    = "%s:%s@tcp(%s:%v)/%s?charset=utf8mb4&parseTime=True&loc=Local"
-	POSTGRES_CONFIG = "host=%s user=%s password=%s dbname=%s port=%v sslmode=%s TimeZone=Asia/Shanghai"
-)
+func NewPostgresConnection(v *viper.Viper) *gorm.DB {
+	username := v.GetString("database.username")
+	password := v.GetString("database.password")
+	host := v.GetString("database.host")
+	port := v.GetInt("database.port")
+	database := v.GetString("database.name")
+	sslMode := v.GetString("database.sslmode")
+	timeZone := v.GetString("database.time_zone")
 
-func DatabaseConnection(configuration Config) *gorm.DB {
-	var dialect gorm.Dialector
-	var dbConnection string
-
-	switch os.Getenv("db_driver") {
-	case "postgres":
-		dbConnection = fmt.Sprintf(POSTGRES_CONFIG, configuration.Get("db_host"), configuration.Get("db_username"), configuration.Get("db_password"), configuration.Get("db_name"), configuration.Get("db_port"), configuration.Get("db_sslmode"))
-		dialect = postgres.Open(dbConnection)
-	case "mysql":
-		dbConnection = fmt.Sprintf(MYSQL_CONFIG, configuration.Get("db_username"), configuration.Get("db_password"), configuration.Get("db_host"), configuration.Get("db_port"), configuration.Get("db_name"))
-		dialect = mysql.Open(dbConnection)
-	}
-
-	db, errConnect := gorm.Open(dialect, &gorm.Config{})
-	if errConnect != nil {
-		log.Fatalf("Error while connect to database :[%s]", errConnect)
-		os.Exit(1)
-	}
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s", host, username, password, database, port, sslMode, timeZone)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	helpers.ErrorLogger(err)
 
 	return db
+}
+`
 
+var MongoDBConfig = `package config
+
+import (
+	"blueprint/mongodb/helpers"
+	"context"
+
+	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+func NewMongoConnection(v *viper.Viper) *mongo.Database {
+	ctx := context.Background()
+
+	url := v.GetString("database.url")
+	clientOptions := options.Client()
+	clientOptions.ApplyURI(url)
+	client, err := mongo.NewClient(clientOptions)
+	if err != nil {
+		helpers.ErrorLogger(err)
+
+	}
+
+	err = client.Connect(ctx)
+	if err != nil {
+		helpers.ErrorLogger(err)
+	}
+
+	return client.Database(v.GetString("database.name"))
 }
 `
