@@ -12,7 +12,7 @@ import (
 
 type AppStructure struct {
 	Path     string
-	Code     string
+	Code     interface{}
 	FileName string
 }
 
