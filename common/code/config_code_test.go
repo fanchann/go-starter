@@ -1,79 +1,41 @@
 package code_test
 
 import (
-	"os"
+	"io/fs"
+	"io/ioutil"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
+
 	"github.com/fanchann/go-starter/common/code"
-	"github.com/fanchann/go-starter/helpers"
 )
 
-var dirTest = "./gen"
-var perm = os.FileMode(0755)
+func TestGenConfigMysql(t *testing.T) {
+	m := code.ConfigurationFileGenerate("mysql")
 
-func init() {
-	err := os.MkdirAll(dirTest, perm)
-	if err != nil {
-		panic(err)
-	}
+	out, err := yaml.Marshal(m)
+	assert.Nil(t, err)
+
+	err2 := ioutil.WriteFile(genFolder+"config.mysql.yaml", out, fs.ModePerm|fs.ModeAppend)
+	assert.Nil(t, err2)
 }
 
-func TestCreateJson(t *testing.T) {
-	extension := "json"
-	host := "localhost"
-	driver := "mysql"
-	username := "user"
-	password := "password"
-	dbname := "database"
-	port := 3306
+func TestGenConfigMongoDB(t *testing.T) {
 
-	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
+	m := code.ConfigurationFileGenerate("mongodb")
+	out, err := yaml.Marshal(m)
+	assert.Nil(t, err)
 
-	err := os.WriteFile(dirTest+"/settings.json", []byte(s), perm)
-	helpers.ErrorWithLog(err)
+	err2 := ioutil.WriteFile(genFolder+"config.mongodb.yaml", out, fs.ModePerm|fs.ModeAppend)
+	assert.Nil(t, err2)
 }
 
-func TestCreateToml(t *testing.T) {
-	extension := "toml"
-	host := "localhost"
-	driver := "mysql"
-	username := "user"
-	password := "password"
-	dbname := "database"
-	port := 3306
+func TestGenConfigPostgres(t *testing.T) {
+	m := code.ConfigurationFileGenerate("postgres")
+	out, err := yaml.Marshal(m)
+	assert.Nil(t, err)
 
-	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
-
-	err := os.WriteFile(dirTest+"/settings.toml", []byte(s), perm)
-	helpers.ErrorWithLog(err)
-}
-
-func TestCreateYaml(t *testing.T) {
-	extension := "yaml"
-	host := "localhost"
-	driver := "mysql"
-	username := "user"
-	password := "password"
-	dbname := "database"
-	port := 3306
-
-	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
-
-	err := os.WriteFile(dirTest+"/settings.yaml", []byte(s), perm)
-	helpers.ErrorWithLog(err)
-}
-
-func TestCreateEnvFile(t *testing.T) {
-	extension := "env"
-	host := "localhost"
-	driver := "mysql"
-	username := "user"
-	password := "password"
-	dbname := "database"
-	port := 3306
-
-	s := code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port)
-
-	err := os.WriteFile(dirTest+"/.env", []byte(s), perm)
-	helpers.ErrorWithLog(err)
+	err2 := ioutil.WriteFile(genFolder+"config.postgres.yaml", out, fs.ModePerm|fs.ModeAppend)
+	assert.Nil(t, err2)
 }
