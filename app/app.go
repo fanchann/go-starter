@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/fanchann/go-starter/common/code"
@@ -10,85 +9,70 @@ import (
 	"github.com/fanchann/go-starter/helpers"
 )
 
+type Options struct {
+	AppName string
+	Driver  string
+}
+
 type AppStructure struct {
 	Path     string
 	Code     interface{}
 	FileName string
 }
 
-func GoStarter(app, extension, driver, host string, port int, username, password, dbname string) error {
-	folderName := strings.ReplaceAll(app, "/", "-")
+func GoStarter(opt Options) error {
+	folderName := strings.ReplaceAll(opt.AppName, "/", "-")
 	home := functions.AppPath{BasePath: folderName}
 
-	folders := []string{
+	directoryList := []string{
 		"cmd",
-		"app/repositories",
-		"app/controllers",
-		"app/domain/models",
-		"app/domain/types",
-		"app/routers",
-		"app/middlewares",
-		"app/services",
-		"utils",
-		"config",
+		"api",
+		"db/migrations",
+		"internals/config",
+		"internals/delivery/http",
+		"internals/delivery/messaging",
+		"internals/gateway",
+		"internals/models",
+		"internals/repository",
+		"internals/usecase",
+		"internals/helpers",
+		"tests",
 	}
 
-	for _, folder := range folders {
-		err := home.CreateAppPath(folder)
+	for _, dir := range directoryList {
+		err := home.CreateAppPath(dir)
 		if err != nil {
-			return fmt.Errorf("failed to create layer '%s': [%v]", folder, err)
+			return fmt.Errorf("failed to create layer '%s': [%v]", dir, err)
 		} else {
-			fmt.Printf("layer '%s' created successfully.\n", folder)
+			fmt.Printf("layer '%s' created successfully.\n", dir)
 		}
 	}
 
-	appStructure := []AppStructure{
-		{Path: "cmd/", FileName: "main.go", Code: writeFileCodeSelection(extension, code.MainCodeEnvConfig, code.MainCode)},
-		{Path: "config/", FileName: fmt.Sprintf("%s.go", driver), Code: writeFileCodeSelection(extension, code.DBConfigWithEnvSetting, code.DBLib)},
-		{Path: pathSelection(extension), FileName: namingFileSelection(extension), Code: writeFileCodeSelection(extension, code.WriteAppConfiguration("env", host, driver, username, password, dbname, port), code.LoadConfigCode)},
-		{Path: "/", FileName: "go.mod", Code: writeFileCodeSelection(extension, code.GoModEnv, code.GoMod)},
-		{Path: "/", FileName: "docker-compose.yaml", Code: code.GenerateDockerCompose(driver, username, password, dbname, strconv.Itoa(port))},
+	structures := []AppStructure{
+		{Path: "cmd/", Code: code.NewDatabaseOptions(opt.Driver).MainApp, FileName: "main.go"},
+		{Path: "./", Code: code.NewDatabaseOptions(opt.Driver).Dependencies, FileName: "go.mod"},
+		{Path: "internals/config/", Code: code.NewDatabaseOptions(opt.Driver).DatabaseDriver, FileName: fmt.Sprintf("%s.go", opt.Driver)},
+		{Path: "internals/config/", Code: code.ViperConfiguration, FileName: "viper.go"},
+		{Path: "internals/helpers/", Code: code.ErrorLoggerCode, FileName: "error.go"},
 	}
 
-	if extension == "env" {
-		appStructure = append(appStructure, AppStructure{Path: "config/", FileName: "config.go", Code: writeFileCodeSelection(extension, code.ConfigCodeEnv, "")})
-	} else {
-		appStructure = append(appStructure, AppStructure{
-			Path:     "/",
-			FileName: fmt.Sprintf("config.%s", extension),
-			Code:     code.WriteAppConfiguration(extension, host, driver, username, password, dbname, port),
-		})
-
-	}
-
-	for _, structure := range appStructure {
-
-		if err := home.GenerateAppCode(structure.Code, structure.Path, structure.FileName, helpers.GetGoVersion(), app, extension); err != nil {
-			return err
+	// code generator
+	for _, structure := range structures {
+		if errGenCode := home.GenerateAppCode(structure.Code, structure.Path, structure.FileName, helpers.GetGoVersion(), opt.AppName); errGenCode != nil {
+			return errGenCode
 		}
+	}
 
+	// config generator
+	config := []AppStructure{
+		{Path: folderName, Code: code.NewDatabaseOptions(opt.Driver).ConfigurationFile, FileName: "config.dev.yaml"},
+		{Path: folderName, Code: code.NewDatabaseOptions(opt.Driver).DockerCompose, FileName: "docker-compose.yaml"},
+	}
+
+	for _, cfgGen := range config {
+		if errGenConfig := helpers.NewYamlWriter(cfgGen.Code.(map[string]interface{}), cfgGen.Path, cfgGen.FileName); errGenConfig != nil {
+			return errGenConfig
+		}
 	}
 	return nil
-
-}
-
-func writeFileCodeSelection(extension, codeA, codeB string) string {
-	if extension == "env" {
-		return codeA
-	}
-	return codeB
-}
-
-func namingFileSelection(extension string) string {
-	if extension == "env" {
-		return ".env"
-	}
-	return fmt.Sprintf("%s_reader.go", extension)
-}
-
-func pathSelection(extension string) string {
-	if extension != "env" {
-		return "config/"
-	}
-	return "/"
 }

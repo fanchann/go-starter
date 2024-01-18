@@ -7,8 +7,8 @@ var (
 		"flag"
 		"fmt"
 
-		"{{.Package}}/config"
-		"{{.Package}}/helpers"
+		"{{.Package}}/internals/config"
+		"{{.Package}}/internals/helpers"
 	)
 	
 	var stage *string
@@ -35,8 +35,8 @@ var (
 	PostgresMain = `package main
 
 	import (
-		"{{.Package}}/config"
-		"{{.Package}}/helpers"
+		"{{.Package}}/internals/config"
+		"{{.Package}}/internals/helpers"
 		"flag"
 		"fmt"
 	)
@@ -65,8 +65,8 @@ var (
 	MongoMain = `package main
 
 	import (
-		"{{.Package}}/config"
-		"{{.Package}}/helpers"
+		"{{.Package}}/internals/config"
+		"{{.Package}}/internals/helpers"
 		"context"
 		"flag"
 		"fmt"

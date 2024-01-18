@@ -1,12 +1,20 @@
 package code
 
+type AppConfiguration struct {
+	Dependencies      string
+	DatabaseDriver    string
+	ConfigurationFile map[string]interface{}
+	DockerCompose     map[string]interface{}
+	MainApp           string
+}
+
 var MysqlDBConfig = `package config
 
 import (
-	"blueprint/mysql/helpers"
 	"fmt"
 	"time"
 
+	"{{.Package}}/internals/helpers"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -41,7 +49,7 @@ func NewMysqlConnection(v *viper.Viper) *gorm.DB {
 var PostgresDBConfig = `package config
 
 import (
-	"blueprint/postgres/helpers"
+	"{{.Package}}/internals/helpers"
 	"fmt"
 
 	"github.com/spf13/viper"
@@ -69,7 +77,7 @@ func NewPostgresConnection(v *viper.Viper) *gorm.DB {
 var MongoDBConfig = `package config
 
 import (
-	"blueprint/mongodb/helpers"
+	"{{.Package}}/internals/helpers"
 	"context"
 
 	"github.com/spf13/viper"
@@ -97,3 +105,40 @@ func NewMongoConnection(v *viper.Viper) *mongo.Database {
 	return client.Database(v.GetString("database.name"))
 }
 `
+
+func NewDatabaseOptions(driver string) *AppConfiguration {
+	switch driver {
+	case "mongodb":
+		return &AppConfiguration{
+			Dependencies:      MongoDBDependencies,
+			DatabaseDriver:    MongoDBConfig,
+			DockerCompose:     ComposeCodeGenerate(driver),
+			MainApp:           MongoMain,
+			ConfigurationFile: ConfigurationFileGenerate(driver),
+		}
+	case "mysql":
+		return &AppConfiguration{
+			Dependencies:      MysqlDependencies,
+			DatabaseDriver:    MysqlDBConfig,
+			DockerCompose:     ComposeCodeGenerate(driver),
+			MainApp:           MysqlMain,
+			ConfigurationFile: ConfigurationFileGenerate(driver),
+		}
+	case "postgres":
+		return &AppConfiguration{
+			Dependencies:      PostgresDependencies,
+			DatabaseDriver:    PostgresDBConfig,
+			DockerCompose:     ComposeCodeGenerate(driver),
+			MainApp:           PostgresMain,
+			ConfigurationFile: ComposeCodeGenerate(driver),
+		}
+	default:
+		return &AppConfiguration{
+			Dependencies:      MysqlDependencies,
+			DatabaseDriver:    MysqlDBConfig,
+			DockerCompose:     ComposeCodeGenerate(driver),
+			MainApp:           MysqlMain,
+			ConfigurationFile: ConfigurationFileGenerate(driver),
+		}
+	}
+}

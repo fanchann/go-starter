@@ -13,51 +13,46 @@ type AppPath struct {
 
 func (a *AppPath) CreateAppPath(path string) error {
 	absPath := filepath.Join(a.BasePath, path)
-	err := os.MkdirAll(absPath, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	return nil
+	return os.MkdirAll(absPath, os.ModePerm)
 }
-func (a *AppPath) GenerateAppCode(code, path, fileName, goVer, pkg, extension string) error {
-	template, errParse := parseTemplate(code)
+
+func (a *AppPath) GenerateAppCode(code interface{}, path, fileName, goVer, pkg string) error {
+	tpl, errParse := parseTemplate(code)
 	if errParse != nil {
 		return errParse
 	}
 
-	var tpl bytes.Buffer
-	if errExecTemplate := executeTemplate(template, &tpl, goVer, pkg, extension); errExecTemplate != nil {
+	var tplBuf bytes.Buffer
+	if errExecTemplate := executeTemplate(tpl, &tplBuf, goVer, pkg); errExecTemplate != nil {
 		return errExecTemplate
 	}
 
 	absFilePath := filepath.Join(a.BasePath, path, fileName)
-	return writeTofile(absFilePath, []byte(code), &tpl)
+	return writeToFile(absFilePath, tplBuf.Bytes())
 }
 
-func writeTofile(path string, code []byte, tpl *bytes.Buffer) error {
+func writeToFile(path string, code []byte) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	_, err = tpl.WriteTo(file)
+	_, err = file.Write(code)
 	return err
 }
 
-func parseTemplate(code string) (*template.Template, error) {
-	return template.New("").Parse(code)
+func parseTemplate(code interface{}) (*template.Template, error) {
+	return template.New("").Parse(code.(string))
 }
 
-func executeTemplate(t *template.Template, tpl *bytes.Buffer, goVersion, pkgName, extension string) error {
+func executeTemplate(t *template.Template, tpl *bytes.Buffer, goVersion, pkgName string) error {
 	data := struct {
 		GoVersion string
 		Package   string
-		Extension string
 	}{
 		GoVersion: goVersion,
 		Package:   pkgName,
-		Extension: extension,
 	}
 
 	return t.Execute(tpl, data)
