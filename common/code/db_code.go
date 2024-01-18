@@ -130,7 +130,7 @@ func NewDatabaseOptions(driver string) *AppConfiguration {
 			DatabaseDriver:    PostgresDBConfig,
 			DockerCompose:     ComposeCodeGenerate(driver),
 			MainApp:           PostgresMain,
-			ConfigurationFile: ComposeCodeGenerate(driver),
+			ConfigurationFile: ConfigurationFileGenerate(driver),
 		}
 	default:
 		return &AppConfiguration{

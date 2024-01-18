@@ -6,7 +6,7 @@ var (
 			"username":  "postgres",
 			"password":  "postgres",
 			"host":      "localhost",
-			"port":      5438,
+			"port":      5432,
 			"name":      "test",
 			"sslmode":   "disable",
 			"time_zone": "Asia/Jakarta",
