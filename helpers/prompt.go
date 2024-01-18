@@ -2,26 +2,16 @@ package helpers
 
 import (
 	"errors"
-	"fmt"
-	"regexp"
+	"log"
 	"strconv"
 
 	"github.com/manifoldco/promptui"
 )
 
-var (
-	genFailed = "generate failed"
-)
-
 func PromptNamePackage() string {
 	validate := func(input string) error {
-		matched, err := regexp.MatchString("^github\\.com\\/[a-zA-Z]+\\/[a-zA-Z]+", input)
-		if err != nil {
-			return errors.New("[*] Package name must start with github.com/{username}/{package}")
-		}
-
-		if !matched {
-			return errors.New("[*] Package name must start with github.com/{username}/{package}")
+		if len(input) <= 3 {
+			return errors.New("name package must be longer than 3 characters")
 		}
 
 		return nil
@@ -34,7 +24,7 @@ func PromptNamePackage() string {
 
 	result, err := prompt.Run()
 	if err != nil {
-		fmt.Printf(genFailed, err)
+		log.Fatalf("Failed to prompt for package name: %v", err)
 		return ""
 	}
 
@@ -50,7 +40,7 @@ func PromptArrayString(label string, item []string) string {
 	_, result, err := prompt.Run()
 
 	if err != nil {
-		panic(genFailed)
+		log.Fatalf("Error : %v", err)
 	}
 
 	return result
@@ -69,7 +59,8 @@ func PromptString(label string) string {
 	result, err := prompt.Run()
 
 	if err != nil {
-		panic(genFailed)
+		log.Fatalf("Error : %v", err)
+
 	}
 
 	return result
@@ -92,7 +83,8 @@ func PromptInteger(label string) int {
 	result, err := prompt.Run()
 
 	if err != nil {
-		panic(genFailed)
+		log.Fatalf("Error : %v", err)
+
 	}
 
 	port, _ := strconv.Atoi(result)

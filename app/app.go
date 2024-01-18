@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/fanchann/go-starter/common/code"
 	"github.com/fanchann/go-starter/common/functions"
@@ -21,10 +20,8 @@ type AppStructure struct {
 }
 
 func GoStarter(opt Options) error {
-	folderName := strings.ReplaceAll(opt.AppName, "/", "-")
-	home := functions.AppPath{BasePath: folderName}
-
-	directoryList := []string{
+	// basePath := strings.ReplaceAll(opt.AppName, "/", "-")
+	restDirectoryList := []string{
 		"cmd",
 		"api",
 		"db/migrations",
@@ -38,8 +35,13 @@ func GoStarter(opt Options) error {
 		"internals/helpers",
 		"tests",
 	}
+	return generateStructure(opt, restDirectoryList)
+}
 
-	for _, dir := range directoryList {
+func generateStructure(opt Options, DirectoryList []string) error {
+	basePath := "./"
+	home := functions.AppPath{BasePath: basePath}
+	for _, dir := range DirectoryList {
 		err := home.CreateAppPath(dir)
 		if err != nil {
 			return fmt.Errorf("failed to create layer '%s': [%v]", dir, err)
@@ -50,7 +52,7 @@ func GoStarter(opt Options) error {
 
 	structures := []AppStructure{
 		{Path: "cmd/", Code: code.NewDatabaseOptions(opt.Driver).MainApp, FileName: "main.go"},
-		{Path: "./", Code: code.NewDatabaseOptions(opt.Driver).Dependencies, FileName: "go.mod"},
+		{Path: basePath, Code: code.NewDatabaseOptions(opt.Driver).Dependencies, FileName: "go.mod"},
 		{Path: "internals/config/", Code: code.NewDatabaseOptions(opt.Driver).DatabaseDriver, FileName: fmt.Sprintf("%s.go", opt.Driver)},
 		{Path: "internals/config/", Code: code.ViperConfiguration, FileName: "viper.go"},
 		{Path: "internals/helpers/", Code: code.ErrorLoggerCode, FileName: "error.go"},
@@ -65,8 +67,8 @@ func GoStarter(opt Options) error {
 
 	// config generator
 	config := []AppStructure{
-		{Path: folderName, Code: code.NewDatabaseOptions(opt.Driver).ConfigurationFile, FileName: "config.dev.yaml"},
-		{Path: folderName, Code: code.NewDatabaseOptions(opt.Driver).DockerCompose, FileName: "docker-compose.yaml"},
+		{Path: basePath, Code: code.NewDatabaseOptions(opt.Driver).ConfigurationFile, FileName: "config.dev.yaml"},
+		{Path: basePath, Code: code.NewDatabaseOptions(opt.Driver).DockerCompose, FileName: "docker-compose.yaml"},
 	}
 
 	for _, cfgGen := range config {

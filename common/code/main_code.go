@@ -19,7 +19,7 @@ var (
 	}
 	
 	func main() {
-		v := helpers.NewViper(*stage)
+		v := config.NewViper(*stage)
 		db := config.NewMysqlConnection(v)
 	
 		d, err := db.DB()
@@ -70,6 +70,7 @@ var (
 		"context"
 		"flag"
 		"fmt"
+		"time"
 	
 		"go.mongodb.org/mongo-driver/mongo/readpref"
 	)
@@ -84,8 +85,12 @@ var (
 	func main() {
 		v := config.NewViper(*stage)
 		db := config.NewMongoConnection(v)
+
+
+		ctx, errTimeout := context.WithTimeout(context.Background(), time.Second*5)
+		defer errTimeout()
 	
-		err := db.Client().Ping(context.Background(), &readpref.ReadPref{})
+		err := db.Client().Ping(ctx, &readpref.ReadPref{})
 		helpers.ErrorLogger(err)
 	
 		fmt.Println("✅ connected")

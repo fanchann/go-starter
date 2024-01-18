@@ -57,7 +57,7 @@ var (
 		"version": "3.8",
 		"services": map[string]interface{}{
 			"mongodb": map[string]interface{}{
-				"image":          "mongo:4.2.2-bionic",
+				"image":          "mongo:4.4.2-bionic",
 				"container_name": "mongodb",
 				"ports":          []string{"27017:27017"},
 				"environment": []string{
